@@ -5,11 +5,16 @@ const isValidPhone = (str) =>
   );
 
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
-import { createOrder } from "../../services/apiRestaurant";
-import Button from "../../ui/Button";
 import { useSelector } from "react-redux";
+import { createOrder } from "../../services/apiRestaurant";
+import { clearCart, getCart, getTotalItemPrice } from "../cart/cartslice";
+import { formatCurrency } from "../../utils/helpers";
+import Button from "../../ui/Button";
+import EmptyCart from "../cart/EmptyCart";
+import store from "../../store";
+import { useState } from "react";
 
-const fakeCart = [
+/*const fakeCart = [
   {
     pizzaId: 12,
     name: "Mediterranean",
@@ -31,16 +36,21 @@ const fakeCart = [
     unitPrice: 15,
     totalPrice: 15,
   },
-];
+];*/
 
 function CreateOrder() {
+  const [withPriority, setWithPriority] = useState(false);
   const username = useSelector((state) => state.user.username);
   const navigation = useNavigation();
   const isSubmiting = navigation.state === "submitting";
 
   const formErrors = useActionData();
-  // const [withPriority, setWithPriority] = useState(false);
-  const cart = fakeCart;
+  const cart = useSelector(getCart);
+  const totalCartPrice = useSelector(getTotalItemPrice);
+  const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
+  const totalPrice = totalCartPrice + priorityPrice;
+
+  if (!cart.length) return <EmptyCart />;
 
   return (
     <div className="px-4 py-6">
@@ -88,8 +98,8 @@ function CreateOrder() {
             name="priority"
             id="priority"
             className="h-5 w-5 accent-yellow-500 focus:outline-none focus:ring focus:ring-yellow-400 focus:ring-offset-2"
-            // value={withPriority}
-            // onChange={(e) => setWithPriority(e.target.checked)}
+            value={withPriority}
+            onChange={(e) => setWithPriority(e.target.checked)}
           />
           <label htmlFor="priority" className="font-medium">
             Want to yo give your order priority?
@@ -98,7 +108,9 @@ function CreateOrder() {
 
         <div>
           <Button disabled={isSubmiting} type="primary">
-            {isSubmiting ? "Placing Order" : "Order now"}
+            {isSubmiting
+              ? "Placing Order"
+              : `Order now from ${formatCurrency(totalPrice)}`}
           </Button>
         </div>
         <div>
@@ -116,7 +128,7 @@ export async function action({ request }) {
   const order = {
     ...data,
     cart: JSON.parse(data.cart),
-    priority: data.priority === "on",
+    priority: data.priority === "true",
   };
 
   const errors = {};
@@ -127,6 +139,9 @@ export async function action({ request }) {
   if (Object.keys(errors).length > 0) return errors;
   // is everything okay, create new order and redirect
   const newOrder = await createOrder(order);
+
+  // Do NOT Overuse!
+  store.dispatch(clearCart());
 
   return redirect(`/order/${newOrder.id}`);
 }
