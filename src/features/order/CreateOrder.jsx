@@ -5,7 +5,7 @@ const isValidPhone = (str) =>
   );
 
 import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createOrder } from "../../services/apiRestaurant";
 import { clearCart, getCart, getTotalItemPrice } from "../cart/cartslice";
 import { formatCurrency } from "../../utils/helpers";
@@ -13,6 +13,7 @@ import Button from "../../ui/Button";
 import EmptyCart from "../cart/EmptyCart";
 import store from "../../store";
 import { useState } from "react";
+import { fetchAddress } from "../user/userSlice";
 
 /*const fakeCart = [
   {
@@ -44,6 +45,7 @@ function CreateOrder() {
   const navigation = useNavigation();
   const isSubmiting = navigation.state === "submitting";
 
+  const dispatch = useDispatch();
   const formErrors = useActionData();
   const cart = useSelector(getCart);
   const totalCartPrice = useSelector(getTotalItemPrice);
@@ -55,6 +57,7 @@ function CreateOrder() {
   return (
     <div className="px-4 py-6">
       <h2 className="mb-8 text-xl font-semibold">Ready to order? Lets go!</h2>
+      <button onClick={() => dispatch(fetchAddress())}>Get Position</button>
       {/* <Form method="POST" action="/order/new"> */}
       <Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
