@@ -10,5 +10,5 @@
 </div>
 
 <div align="center">
-<img srt="./public/Screenshot from 2023-11-29 20-59-41.png" />
+<img src="./public/Screenshot from 2023-11-29 20-59-41.png" />
 </div>
