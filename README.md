@@ -1,7 +1,14 @@
-# Creating Professional Real world project using:
+<h1 align="center">This project was built when I was still learning about React and Redux</h1>
 
-### React Router
+<div>
+<p>Technology used:</p>
+<ul>
+<li>Redux</li>
+<li>React Router Dom</li>
+<li>Tailwind CSS</li>
+</Ul>
+</div>
 
-### Redux
-
-### Tailwind
+<div align="center">
+<img srt="./public/Screenshot from 2023-11-29 20-59-41.png" />
+</div>
